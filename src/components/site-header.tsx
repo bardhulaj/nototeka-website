@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { play, useCurrentToken, TEASER_TOKEN, TEASER_URL } from "@/lib/audio";
 import { useLang } from "@/lib/i18n";
 
@@ -34,19 +35,25 @@ export function SiteHeader() {
           className="relative block shrink-0 no-underline"
           style={{ height: "1.5rem" }}
         >
-          <img
+          <Image
             src="/icons/nototeka-logo.svg"
             alt="Nototeka"
+            unoptimized
+            width={120}
+            height={24}
             className="block h-5 w-auto sm:h-6"
             style={{
               filter: "brightness(0) invert(1)",
               opacity: "calc(1 - var(--hero-p, 0))",
             }}
           />
-          <img
+          <Image
             src="/icons/nototeka-logo.svg"
             alt=""
             aria-hidden="true"
+            unoptimized
+            width={120}
+            height={24}
             className="absolute inset-0 block h-5 w-auto sm:h-6"
             style={{ opacity: "var(--hero-p, 0)" }}
           />
@@ -59,6 +66,8 @@ export function SiteHeader() {
             <a
               href="#"
               aria-label={t.download}
+              aria-hidden="true"
+              tabIndex={-1}
               className="inline-flex items-center justify-center transition-opacity hover:opacity-60"
             >
               <svg

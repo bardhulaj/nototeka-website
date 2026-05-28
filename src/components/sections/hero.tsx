@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { useLang } from "@/lib/i18n";
 
 export function Hero() {
@@ -47,7 +48,8 @@ export function Hero() {
         {/* Hero background video */}
         <video
           src="/videos/hero-bg.mp4"
-          autoPlay muted loop playsInline preload="auto"
+          autoPlay muted loop playsInline preload="metadata"
+          poster="/images/hero/hero-desktop.jpg"
           aria-hidden="true"
           disablePictureInPicture disableRemotePlayback
           className="absolute inset-0 size-full object-cover"
@@ -59,9 +61,13 @@ export function Hero() {
           style={{ opacity: "max(0, calc(1 - var(--hero-p, 0) * 1.4))" }}
         >
           <h1 className="leading-none">
-            <img
+            <Image
               src="/icons/nototeka-logo.svg"
               alt="Nototeka"
+              unoptimized
+              priority
+              width={300}
+              height={56}
               style={{ height: "clamp(2.5rem, 12vw, 3.5rem)", width: "auto", maxWidth: "80vw" }}
             />
           </h1>
@@ -75,6 +81,10 @@ export function Hero() {
             {/* Download CTA */}
             <a
               href="#"
+              role="button"
+              aria-label={t.download}
+              aria-disabled="true"
+              tabIndex={0}
               className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
               style={{
                 background: "linear-gradient(180deg, rgba(255,252,248,0.55) 0%, rgba(255,246,236,0.28) 100%)",
@@ -91,6 +101,10 @@ export function Hero() {
             {/* Listen CTA */}
             <a
               href="#"
+              role="button"
+              aria-label={t.listen}
+              aria-disabled="true"
+              tabIndex={0}
               className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
               style={{
                 background: "linear-gradient(180deg, rgba(255,252,248,0.4) 0%, rgba(255,246,236,0.15) 100%)",
@@ -125,9 +139,13 @@ export function Hero() {
           >
             <div className="flex items-center justify-center">
               <h1 className="leading-none">
-                <img
+                <Image
                   src="/icons/nototeka-logo.svg"
                   alt="Nototeka"
+                  unoptimized
+                  priority
+                  width={400}
+                  height={83}
                   style={{ height: "clamp(3.25rem, 9.1vw, 5.2rem)", width: "auto", maxWidth: "100%" }}
                 />
               </h1>
@@ -152,6 +170,10 @@ export function Hero() {
             <div className="flex justify-center gap-2">
               <a
                 href="#"
+                role="button"
+                aria-label={t.download}
+                aria-disabled="true"
+                tabIndex={0}
                 className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
                 style={{
                   background: "linear-gradient(180deg, rgba(255,252,248,0.55) 0%, rgba(255,246,236,0.28) 100%)",
@@ -167,6 +189,10 @@ export function Hero() {
               </a>
               <a
                 href="#"
+                role="button"
+                aria-label={t.listen}
+                aria-disabled="true"
+                tabIndex={0}
                 className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
                 style={{
                   background: "linear-gradient(180deg, rgba(255,252,248,0.4) 0%, rgba(255,246,236,0.15) 100%)",

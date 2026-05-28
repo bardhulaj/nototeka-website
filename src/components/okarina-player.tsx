@@ -47,7 +47,12 @@ export function OkarinaPlayer() {
     const MOBILE_BP = 640;
 
     let rafId = 0;
+    let idleFrames = 0;
+    const IDLE_THRESHOLD = 3;
+    let lastP = -1;
+
     const update = () => {
+      rafId = 0; // mark as not scheduled
       const pStr = getComputedStyle(
         document.documentElement,
       ).getPropertyValue("--hero-p");
@@ -82,12 +87,37 @@ export function OkarinaPlayer() {
       wrapper.style.width = `${size}px`;
       wrapper.style.height = `${size}px`;
 
-      rafId = requestAnimationFrame(update);
+      // Throttle: only keep the loop alive when p is actively changing.
+      if (p === lastP) {
+        idleFrames++;
+      } else {
+        idleFrames = 0;
+        lastP = p;
+      }
+
+      if (idleFrames < IDLE_THRESHOLD) {
+        rafId = requestAnimationFrame(update);
+      }
+      // Otherwise we stop; the scroll/resize listeners re-arm it as needed.
     };
 
-    update();
+    const scheduleUpdate = () => {
+      idleFrames = 0; // reset idle counter on new scroll/resize
+      if (!rafId) {
+        rafId = requestAnimationFrame(update);
+      }
+    };
+
+    // Kick off the first render
+    rafId = requestAnimationFrame(update);
+
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
+
     return () => {
       cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
       video.removeEventListener("loadedmetadata", setRate);
     };
   }, []);
