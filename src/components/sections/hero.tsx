@@ -110,7 +110,10 @@ export function Hero() {
         {/* ── Desktop layout: 3-column grid ── */}
         <div
           className="relative z-10 hidden w-full px-6 sm:px-10 md:block lg:px-16"
-          style={{ opacity: "max(0, calc(1 - var(--hero-p, 0) * 1.4))" }}
+          style={{
+            opacity: "max(0, calc(1 - var(--hero-p, 0) * 1.4))",
+            transform: "translateZ(0)",  /* force GPU layer above Safari's HW video */
+          }}
         >
           {/* Constrain width so the three hero elements sit closer together */}
           <div className="mx-auto w-[78%]">
@@ -125,10 +128,7 @@ export function Hero() {
                 <img
                   src="/icons/nototeka-logo.svg"
                   alt="Nototeka"
-                  style={{
-                    height: "clamp(3.25rem, 9.1vw, 5.2rem)", width: "auto", maxWidth: "100%",
-                    filter: "brightness(0) invert(1)",
-                  }}
+                  style={{ height: "clamp(3.25rem, 9.1vw, 5.2rem)", width: "auto", maxWidth: "100%" }}
                 />
               </h1>
             </div>
@@ -136,7 +136,7 @@ export function Hero() {
             <div className="flex items-center justify-center text-center">
               <p
                 className="narrative-3 opacity-80"
-                style={{ fontSize: "1.625rem", lineHeight: "1.1", color: "rgba(255,255,255,0.88)" }}
+                style={{ fontSize: "1.625rem", lineHeight: "1.1" }}
               >
                 {t.tagline}
               </p>
