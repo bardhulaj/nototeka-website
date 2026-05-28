@@ -32,6 +32,12 @@ export function OkarinaPlayer() {
     else video.addEventListener("loadedmetadata", setRate, { once: true });
     video.play().catch(() => {});
 
+    // iOS Safari hardware decoder doesn't support HEVC alpha tracks —
+    // the video plays with its white background visible. CSS multiply
+    // blending makes white pixels transparent without re-encoding.
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && "ontouchend" in document;
+    if (isIOS) video.style.mixBlendMode = "multiply";
+
     const CARD_W = 320;
     const HERO_SIZE_FACTOR = 1.62; // 432 × 1.2 = +20% desktop
     const VISIBLE_OVERLAP = 60;

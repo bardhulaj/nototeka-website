@@ -41,7 +41,7 @@ export function Hero() {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 z-10 h-28"
-          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.18), transparent)" }}
+          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.12) 60%, transparent)" }}
         />
 
         {/* Hero background video */}
@@ -112,6 +112,9 @@ export function Hero() {
           className="relative z-10 hidden w-full px-6 sm:px-10 md:block lg:px-16"
           style={{ opacity: "max(0, calc(1 - var(--hero-p, 0) * 1.4))" }}
         >
+          {/* Constrain width so the three hero elements sit closer together */}
+          <div className="mx-auto w-[78%]">
+
           {/* Row 1: Logo | (okarina space) | Tagline */}
           <div
             className="grid w-full items-center"
@@ -176,6 +179,8 @@ export function Hero() {
               </a>
             </div>
           </div>
+
+          </div>{/* end mx-auto w-[78%] */}
         </div>
       </div>
     </section>
