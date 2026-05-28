@@ -47,7 +47,7 @@ export const TRANSLATIONS: Record<Lang, Translation> = {
     pauseTeaser: "Pause Nototeka Teaser",
     playTeaser: "Play Nototeka Teaser",
     tagline: "Digital Archive of Sounds of Traditional Albanian Instruments",
-    archiveTitle: "Digital Archive of Sounds of Traditional Albanian Instruments",
+    archiveTitle: "Digital Archive of Sounds\nof Traditional Albanian Instruments",
     archiveDescription:
       "Nototeka captures and preserves the sounds of traditional Albanian instruments in a professional digital archive built for those who create, study, and carry this musical heritage forward.",
     sonicRelicsDescription:
@@ -77,7 +77,7 @@ export const TRANSLATIONS: Record<Lang, Translation> = {
     pauseTeaser: "Ndaloni Nototeka Teaser",
     playTeaser: "Luani Nototeka Teaser",
     tagline: "Arkiv Dixhital i Tingujve të Instrumenteve Tradicionale Shqiptare",
-    archiveTitle: "Arkiv Dixhital i Tingujve të Instrumenteve Tradicionale Shqiptare",
+    archiveTitle: "Arkiv Dixhital i Tingujve\ntë Instrumenteve Tradicionale Shqiptare",
     archiveDescription:
       "Nototeka kap dhe ruan tingujt e instrumenteve tradicionale shqiptare — një arkiv dixhital i ndërtuar për ata që krijojnë, studiojnë dhe mbajnë përpara këtë trashëgimi muzikore.",
     sonicRelicsDescription:
