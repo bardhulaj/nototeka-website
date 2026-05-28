@@ -18,6 +18,11 @@ export function OkarinaPlayer() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [footerIn, setFooterIn] = useState(false);
+  // iOS Safari hardware decoder doesn't support HEVC alpha.
+  // Fix: remove will-change (which isolates the compositing layer) and
+  // apply mix-blend-mode:multiply on the wrapper so white pixels
+  // blend away against whatever is painted beneath.
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -32,11 +37,9 @@ export function OkarinaPlayer() {
     else video.addEventListener("loadedmetadata", setRate, { once: true });
     video.play().catch(() => {});
 
-    // iOS Safari hardware decoder doesn't support HEVC alpha tracks —
-    // the video plays with its white background visible. CSS multiply
-    // blending makes white pixels transparent without re-encoding.
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && "ontouchend" in document;
-    if (isIOS) video.style.mixBlendMode = "multiply";
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && "ontouchend" in document) {
+      setIsIOS(true);
+    }
 
     const CARD_W = 320;
     const HERO_SIZE_FACTOR = 1.62; // 432 × 1.2 = +20% desktop
@@ -117,7 +120,10 @@ export function OkarinaPlayer() {
         style={{
           width: 0,
           height: 0,
-          willChange: "transform, width, height",
+          // On iOS: drop will-change so the wrapper isn't promoted to an
+          // isolated GPU layer — that isolation breaks mix-blend-mode.
+          willChange: isIOS ? "auto" : "transform, width, height",
+          mixBlendMode: isIOS ? "multiply" : "normal",
           opacity: footerIn ? 0 : 1,
           transition: "opacity 400ms ease",
         }}

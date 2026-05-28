@@ -125,7 +125,10 @@ export function Hero() {
                 <img
                   src="/icons/nototeka-logo.svg"
                   alt="Nototeka"
-                  style={{ height: "clamp(3.25rem, 9.1vw, 5.2rem)", width: "auto", maxWidth: "100%" }}
+                  style={{
+                    height: "clamp(3.25rem, 9.1vw, 5.2rem)", width: "auto", maxWidth: "100%",
+                    filter: "brightness(0) invert(1)",
+                  }}
                 />
               </h1>
             </div>
@@ -133,7 +136,7 @@ export function Hero() {
             <div className="flex items-center justify-center text-center">
               <p
                 className="narrative-3 opacity-80"
-                style={{ fontSize: "1.625rem", lineHeight: "1.1" }}
+                style={{ fontSize: "1.625rem", lineHeight: "1.1", color: "rgba(255,255,255,0.88)" }}
               >
                 {t.tagline}
               </p>
