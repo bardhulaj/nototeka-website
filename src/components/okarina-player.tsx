@@ -33,7 +33,7 @@ export function OkarinaPlayer() {
     video.play().catch(() => {});
 
     const CARD_W = 320;
-    const HERO_SIZE_FACTOR = 1.35; // 480 → 432, −10%
+    const HERO_SIZE_FACTOR = 1.62; // 432 × 1.2 = +20% desktop
     const VISIBLE_OVERLAP = 60;
     const MOBILE_BP = 640;
 
@@ -50,7 +50,7 @@ export function OkarinaPlayer() {
       const maxSize = isMobile
         ? Math.min(vw * 0.5, vh * 0.4)
         : Math.min(CARD_W * HERO_SIZE_FACTOR, vh * 0.68);
-      const minSize = 153; // 170 → 153, −10%
+      const minSize = isMobile ? 153 : 184; // desktop corner +20%
       const size = maxSize + (minSize - maxSize) * p;
 
       // Okarina centred in the middle column of the 3-column hero layout.
