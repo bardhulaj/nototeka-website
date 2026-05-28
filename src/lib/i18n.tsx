@@ -76,8 +76,8 @@ export const TRANSLATIONS: Record<Lang, Translation> = {
     listen: "Dëgjo",
     pauseTeaser: "Ndaloni Nototeka Teaser",
     playTeaser: "Luani Nototeka Teaser",
-    tagline: "Arkiv Dixhital i Tingujve të Instrumenteve Tradicionale Shqiptare",
-    archiveTitle: "Arkiv Dixhital i Tingujve\ntë Instrumenteve Tradicionale Shqiptare",
+    tagline: "Arkiva Digjitale i Tingujve të Instrumenteve Tradicionale Shqiptare",
+    archiveTitle: "Arkiva Digjitale i Tingujve\ntë Instrumenteve Tradicionale Shqiptare",
     archiveDescription:
       "Nototeka kap dhe ruan tingujt e instrumenteve tradicionale shqiptare — një arkiv dixhital i ndërtuar për ata që krijojnë, studiojnë dhe mbajnë përpara këtë trashëgimi muzikore.",
     sonicRelicsDescription:
@@ -96,7 +96,7 @@ export const TRANSLATIONS: Record<Lang, Translation> = {
     supportedBy: "Mbështetur nga",
     ministry: "Ministria e Kulturës, Rinisë dhe Sportit të Kosovës",
     footerTagline:
-      "Nototeka — Arkiv Dixhital i Tingujve të Instrumenteve Tradicionale Shqiptare.",
+      "Nototeka — Arkiva Digjitale i Tingujve të Instrumenteve Tradicionale Shqiptare.",
     copyright: "© MMXXVI Nototeka · Prishtinë, Kosovë",
   },
 };
