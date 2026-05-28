@@ -24,8 +24,20 @@ out/
 "Nototeka – Digital Archive*"
 Nototeka*/
 additions/
+additions /
 *.zip
 *.wav
+
+# Build cache
+tsconfig.tsbuildinfo
+
+# Internal / AI session files
+.claude/
+AGENTS.md
+CLAUDE.md
+TARGET.md
+figma-plugin/
+docs/
 
 # OS junk
 .DS_Store

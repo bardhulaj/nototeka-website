@@ -54,11 +54,13 @@ export function OkarinaPlayer() {
       const size = maxSize + (minSize - maxSize) * p;
 
       // Okarina centred in the middle column of the 3-column hero layout.
+      // On mobile: sits at the bottom of the hero viewport so it's visible
+      // on arrival, then slides to the bottom-right corner as user scrolls.
       const RIGHT_MARGIN = 24;
       const targetX = vw / 2 - size / 2;
       const maxX = vw - size - RIGHT_MARGIN;
-      const heroX = isMobile ? -size - 16 : Math.min(targetX, maxX);
-      const heroY = vh / 2 - size / 2;
+      const heroX = isMobile ? vw / 2 - size / 2 : Math.min(targetX, maxX);
+      const heroY = isMobile ? vh - size - 40 : vh / 2 - size / 2;
 
       const margin = 24;
       const cornerX = vw - size - margin;
