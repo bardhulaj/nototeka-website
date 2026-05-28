@@ -17,6 +17,9 @@ export function Hero() {
       const p = Math.max(0, Math.min(1, window.scrollY / window.innerHeight));
       section.style.setProperty("--hero-p", String(p));
       document.documentElement.style.setProperty("--hero-p", String(p));
+      // Compute opacity in JS — Safari does not support max() in inline opacity
+      const opacity = Math.max(0, 1 - p * 1.4);
+      document.documentElement.style.setProperty("--hero-content-opacity", String(opacity));
     };
     const onScroll = () => { cancelAnimationFrame(rafId); rafId = requestAnimationFrame(update); };
     update();
@@ -48,8 +51,7 @@ export function Hero() {
         {/* Hero background video */}
         <video
           src="/videos/hero-bg.mp4"
-          autoPlay muted loop playsInline preload="metadata"
-          poster="/images/hero/hero-desktop.jpg"
+          autoPlay muted loop playsInline preload="auto"
           aria-hidden="true"
           disablePictureInPicture disableRemotePlayback
           className="absolute inset-0 size-full object-cover"
@@ -58,7 +60,7 @@ export function Hero() {
         {/* ── Mobile layout: stacked, centered ── */}
         <div
           className="relative z-10 flex w-full flex-col items-center gap-6 px-6 text-center sm:px-10 md:hidden"
-          style={{ opacity: "max(0, calc(1 - var(--hero-p, 0) * 1.4))" }}
+          style={{ opacity: "var(--hero-content-opacity, 1)" }}
         >
           <h1 className="leading-none">
             <Image
@@ -125,7 +127,7 @@ export function Hero() {
         <div
           className="relative z-10 hidden w-full px-6 sm:px-10 md:block lg:px-16"
           style={{
-            opacity: "max(0, calc(1 - var(--hero-p, 0) * 1.4))",
+            opacity: "var(--hero-content-opacity, 1)",
             transform: "translateZ(0)",  /* force GPU layer above Safari's HW video */
           }}
         >
