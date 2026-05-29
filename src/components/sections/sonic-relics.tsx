@@ -55,7 +55,7 @@ const INSTRUMENTS: Instrument[] = [
   },
   {
     id: "fyell",
-    name: "Fyell",
+    name: "Flute",
     prefix: "FYELL",
     categories: [
       { id: "notes", label: "8 single notes", singular: "Note", slug: "note", count: 8 },
@@ -64,7 +64,7 @@ const INSTRUMENTS: Instrument[] = [
   },
   {
     id: "fyell-150",
-    name: "Fyell (150-year-old)",
+    name: "Flute (150-year-old)",
     prefix: "FYELL-150",
     categories: [
       { id: "notes", label: "4 single notes", singular: "Note", slug: "note", count: 4 },
@@ -73,7 +73,7 @@ const INSTRUMENTS: Instrument[] = [
   },
   {
     id: "gajde",
-    name: "Gajde",
+    name: "Bagpipe",
     prefix: "GAJDE",
     categories: [
       { id: "notes", label: "5 single notes", singular: "Note", slug: "note", count: 5 },
@@ -82,7 +82,7 @@ const INSTRUMENTS: Instrument[] = [
   },
   {
     id: "gjethe",
-    name: "Gjethe",
+    name: "Leaf",
     prefix: "GJETHE",
     categories: [
       { id: "notes", label: "8 single notes", singular: "Note", slug: "note", count: 8 },
@@ -118,7 +118,7 @@ const INSTRUMENTS: Instrument[] = [
   },
   {
     id: "surla",
-    name: "Surla",
+    name: "Shawm",
     prefix: "SURLA",
     categories: [
       { id: "notes", label: "7 single notes", singular: "Note", slug: "note", count: 7 },

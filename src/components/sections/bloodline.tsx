@@ -5,10 +5,10 @@ import { useLang } from "@/lib/i18n";
 
 const CUSTODIANS = [
   { name: "Hysen Kurtaj", instruments: "Lahuta" },
-  { name: "Fatmir Makolli", instruments: "Çifteli · Gajde · Fyell" },
-  { name: "Sokol Plakolli", instruments: "Fyell (150-year-old)" },
-  { name: "Vesel Nikci", instruments: "Gjethe" },
-  { name: "Sherif Zabelaj", instruments: "Okarina · Surla · Ndrrojse" },
+  { name: "Fatmir Makolli", instruments: "Çifteli · Bagpipe · Flute" },
+  { name: "Sokol Plakolli", instruments: "Flute (150-year-old)" },
+  { name: "Vesel Nikci", instruments: "Leaf" },
+  { name: "Sherif Zabelaj", instruments: "Okarina · Shawm · Ndrrojse" },
 ];
 
 export function Bloodline() {
