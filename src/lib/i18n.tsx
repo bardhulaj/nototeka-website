@@ -58,7 +58,7 @@ export const TRANSLATIONS: Record<Lang, Translation> = {
     sampleLabel: "Sample",
     categoryNotes: (n) => `${n} single notes`,
     categoryChords: (n) => `${n} chords`,
-    categorySamples: (n) => `${n} phrase samples`,
+    categorySamples: (n) => `${n} samples`,
     bloodlineHeading: "The carriers who held a tradition together.",
     bloodlineDescription:
       "Five masters of traditional Albanian instruments, each carrying a lifetime of practice.",
@@ -88,7 +88,7 @@ export const TRANSLATIONS: Record<Lang, Translation> = {
     sampleLabel: "Samples",
     categoryNotes: (n) => `${n} nota të veçanta`,
     categoryChords: (n) => `${n} akorde`,
-    categorySamples: (n) => `${n} mostra frazash`,
+    categorySamples: (n) => `${n} fraza`,
     bloodlineHeading: "Bartësit që mbajtën bashkë një traditë.",
     bloodlineDescription:
       "Pesë mjeshtër të instrumenteve tradicionale shqiptare, secili me shumë përvojë në shërbim të traditës.",
@@ -104,13 +104,13 @@ export const TRANSLATIONS: Record<Lang, Translation> = {
 type LangCtxValue = { lang: Lang; setLang: (l: Lang) => void; t: Translation };
 
 const LangCtx = createContext<LangCtxValue>({
-  lang: "en",
+  lang: "sq",
   setLang: () => {},
-  t: TRANSLATIONS.en,
+  t: TRANSLATIONS.sq,
 });
 
 export function LangProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
+  const [lang, setLangState] = useState<Lang>("sq");
 
   useEffect(() => {
     const stored = localStorage.getItem("nototeka-lang") as Lang | null;

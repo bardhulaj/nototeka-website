@@ -23,7 +23,8 @@ type Category = {
 
 type Instrument = {
   id: string;
-  name: string;
+  name: string;     // English display name
+  nameSq: string;   // Albanian display name
   /** filename prefix inside /public/audio (e.g. "CIFTELI-CHR") */
   prefix: string;
   categories: Category[];
@@ -36,93 +37,103 @@ const INSTRUMENTS: Instrument[] = [
   {
     id: "cifteli-chromatic",
     name: "Çifteli (Chromatic Scale)",
+    nameSq: "Çiftelia (Chromatic Scale)",
     prefix: "CIFTELI-CHR",
     categories: [
       { id: "notes", label: "23 single notes", singular: "Note", slug: "note", count: 23 },
       { id: "chords", label: "23 chords", singular: "Chord", slug: "chord", count: 23 },
-      { id: "samples", label: "5 phrase samples", singular: "Sample", slug: "sample", count: 5 },
+      { id: "samples", label: "5 samples", singular: "Sample", slug: "sample", count: 5 },
     ],
   },
   {
     id: "cifteli-original",
     name: "Çifteli (Original Scale)",
+    nameSq: "Çiftelia (Original Scale)",
     prefix: "CIFTELI-ORIG",
     categories: [
       { id: "notes", label: "13 single notes", singular: "Note", slug: "note", count: 13 },
       { id: "chords", label: "14 chords", singular: "Chord", slug: "chord", count: 14 },
-      { id: "samples", label: "11 phrase samples", singular: "Sample", slug: "sample", count: 11 },
+      { id: "samples", label: "11 samples", singular: "Sample", slug: "sample", count: 11 },
     ],
   },
   {
     id: "fyell",
     name: "Flute",
+    nameSq: "Fyelli",
     prefix: "FYELL",
     categories: [
       { id: "notes", label: "8 single notes", singular: "Note", slug: "note", count: 8 },
-      { id: "samples", label: "6 phrase samples", singular: "Sample", slug: "sample", count: 6 },
+      { id: "samples", label: "6 samples", singular: "Sample", slug: "sample", count: 6 },
     ],
   },
   {
     id: "fyell-150",
     name: "Flute (150-year-old)",
+    nameSq: "Fyelli (150-year-old)",
     prefix: "FYELL-150",
     categories: [
       { id: "notes", label: "4 single notes", singular: "Note", slug: "note", count: 4 },
-      { id: "samples", label: "3 phrase samples", singular: "Sample", slug: "sample", count: 3 },
+      { id: "samples", label: "3 samples", singular: "Sample", slug: "sample", count: 3 },
     ],
   },
   {
     id: "gajde",
     name: "Bagpipe",
+    nameSq: "Gajde",
     prefix: "GAJDE",
     categories: [
       { id: "notes", label: "5 single notes", singular: "Note", slug: "note", count: 5 },
-      { id: "samples", label: "4 phrase samples", singular: "Sample", slug: "sample", count: 4 },
+      { id: "samples", label: "4 samples", singular: "Sample", slug: "sample", count: 4 },
     ],
   },
   {
     id: "gjethe",
     name: "Leaf",
+    nameSq: "Gjethe",
     prefix: "GJETHE",
     categories: [
       { id: "notes", label: "8 single notes", singular: "Note", slug: "note", count: 8 },
-      { id: "samples", label: "5 phrase samples", singular: "Sample", slug: "sample", count: 5 },
+      { id: "samples", label: "5 samples", singular: "Sample", slug: "sample", count: 5 },
     ],
   },
   {
     id: "lahuta",
     name: "Lahuta",
+    nameSq: "Lahuta",
     prefix: "LAHUTA",
     categories: [
       { id: "notes", label: "5 single notes", singular: "Note", slug: "note", count: 5 },
-      { id: "samples", label: "6 phrase samples", singular: "Sample", slug: "sample", count: 6 },
+      { id: "samples", label: "5 samples", singular: "Sample", slug: "sample", count: 5 },
     ],
   },
   {
     id: "ndrrojse",
     name: "Ndrrojse",
+    nameSq: "Ndrrojse",
     prefix: "NDRROJSE",
     categories: [
       { id: "notes", label: "5 single notes", singular: "Note", slug: "note", count: 5 },
-      { id: "samples", label: "3 phrase samples", singular: "Sample", slug: "sample", count: 3 },
+      { id: "samples", label: "3 samples", singular: "Sample", slug: "sample", count: 3 },
     ],
   },
   {
     id: "okarina",
     name: "Okarina",
+    nameSq: "Okarina",
     prefix: "OKARINA",
     categories: [
       { id: "notes", label: "5 single notes", singular: "Note", slug: "note", count: 5 },
-      { id: "samples", label: "4 phrase samples", singular: "Sample", slug: "sample", count: 4 },
+      { id: "samples", label: "4 samples", singular: "Sample", slug: "sample", count: 4 },
     ],
   },
   {
     id: "surla",
     name: "Shawm",
+    nameSq: "Surla",
     prefix: "SURLA",
     categories: [
       { id: "notes", label: "7 single notes", singular: "Note", slug: "note", count: 7 },
-      { id: "samples", label: "3 phrase samples", singular: "Sample", slug: "sample", count: 3 },
+      { id: "samples", label: "3 samples", singular: "Sample", slug: "sample", count: 3 },
     ],
   },
 ];
@@ -287,7 +298,8 @@ export function SonicRelics() {
 function InstrumentBlock({ instrument }: { instrument: Instrument }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const activeToken = useCurrentToken();
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const displayName = lang === "sq" ? instrument.nameSq : instrument.name;
 
   return (
     <article
@@ -298,13 +310,13 @@ function InstrumentBlock({ instrument }: { instrument: Instrument }) {
         <div className="md:col-span-5">
           <h3 className="narrative-1">
             {(() => {
-              const i = instrument.name.indexOf("(");
-              if (i === -1) return instrument.name;
+              const i = displayName.indexOf("(");
+              if (i === -1) return displayName;
               return (
                 <>
-                  {instrument.name.slice(0, i).trimEnd()}
+                  {displayName.slice(0, i).trimEnd()}
                   <span className="mt-1 block narrative-3 opacity-70">
-                    {instrument.name.slice(i)}
+                    {displayName.slice(i)}
                   </span>
                 </>
               );
@@ -357,7 +369,7 @@ function InstrumentBlock({ instrument }: { instrument: Instrument }) {
                   {isOpen ? (
                     <ul
                       id={`${instrument.id}-${cat.id}`}
-                      aria-label={`${catLabel} — ${instrument.name}`}
+                      aria-label={`${catLabel} — ${displayName}`}
                       className="mb-4 mt-1 grid grid-cols-[repeat(auto-fill,minmax(3.25rem,1fr))] gap-1"
                     >
                       {Array.from({ length: cat.count }, (_, i) => {
