@@ -22,13 +22,17 @@ export function SiteHeader() {
           WebkitBackdropFilter: "blur(24px) saturate(150%)",
         }}
       />
-      {/* color-mix: white at p=0 (hero top) → black at p=1 (scrolled) */}
+      {/* The hero and every section below sit on a light (g1) background behind
+          a light liquid-glass nav, so header content is always dark for
+          contrast. (A previous color-mix evaluated to white at the hero top —
+          invisible on the light hero in Safari, which renders the calc() that
+          Chrome silently dropped, so it only "worked" in Chrome.) */}
       <nav
         className="mx-auto flex h-16 max-w-[1680px] items-center gap-5 px-5 sm:h-20 sm:px-10 lg:px-16"
-        style={{ color: "color-mix(in srgb, white, black calc(var(--hero-p, 0) * 100%))" }}
+        style={{ color: "#171717" }}
         aria-label="Main navigation"
       >
-        {/* Wordmark — cross-fade white ↔ dark */}
+        {/* Wordmark */}
         <a
           href="#top"
           aria-label="Nototeka home"
@@ -42,20 +46,6 @@ export function SiteHeader() {
             width={120}
             height={24}
             className="block h-5 w-auto sm:h-6"
-            style={{
-              filter: "brightness(0) invert(1)",
-              opacity: "calc(1 - var(--hero-p, 0))",
-            }}
-          />
-          <Image
-            src="/icons/nototeka-logo.svg"
-            alt=""
-            aria-hidden="true"
-            unoptimized
-            width={120}
-            height={24}
-            className="absolute inset-0 block h-5 w-auto sm:h-6"
-            style={{ opacity: "var(--hero-p, 0)" }}
           />
         </a>
 

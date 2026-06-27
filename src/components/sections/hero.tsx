@@ -48,19 +48,29 @@ export function Hero() {
           style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.12) 60%, transparent)" }}
         />
 
-        {/* Hero background video */}
+        {/* Hero background video.
+            transform: translateZ(0) demotes the video out of Safari's special
+            hardware "media overlay" plane (which paints above sibling content
+            regardless of z-index) into a normal composited layer, so the z-10
+            hero content below reliably paints on top of it. */}
         <video
           src="/videos/hero-bg.mp4"
           autoPlay muted loop playsInline preload="auto"
           aria-hidden="true"
           disablePictureInPicture disableRemotePlayback
           className="absolute inset-0 size-full object-cover"
+          style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}
         />
 
         {/* ── Mobile layout: stacked, centered ── */}
         <div
           className="relative z-10 flex w-full flex-col items-center gap-6 px-6 text-center sm:px-10 md:hidden"
-          style={{ opacity: "var(--hero-content-opacity, 1)" }}
+          style={{
+            opacity: "var(--hero-content-opacity, 1)",
+            transform: "translateZ(0)",          /* own GPU layer above Safari's HW video */
+            WebkitTransform: "translateZ(0)",
+            willChange: "transform",
+          }}
         >
           <h1 className="leading-none">
             <Image
@@ -128,7 +138,9 @@ export function Hero() {
           className="relative z-10 hidden w-full px-6 sm:px-10 md:block lg:px-16"
           style={{
             opacity: "var(--hero-content-opacity, 1)",
-            transform: "translateZ(0)",  /* force GPU layer above Safari's HW video */
+            transform: "translateZ(0)",          /* own GPU layer above Safari's HW video */
+            WebkitTransform: "translateZ(0)",
+            willChange: "transform",
           }}
         >
           {/* Constrain width so the three hero elements sit closer together */}
