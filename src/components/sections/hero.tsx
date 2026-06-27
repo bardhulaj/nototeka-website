@@ -48,19 +48,27 @@ export function Hero() {
           style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.12) 60%, transparent)" }}
         />
 
-        {/* Hero background video.
-            transform: translateZ(0) demotes the video out of Safari's special
-            hardware "media overlay" plane (which paints above sibling content
-            regardless of z-index) into a normal composited layer, so the z-10
-            hero content below reliably paints on top of it. */}
-        <video
-          src="/videos/hero-bg.mp4"
-          autoPlay muted loop playsInline preload="auto"
+        {/* Hero background video — wrapped in a clipped, GPU-composited layer.
+            A bare full-bleed <video> gets promoted to Safari's special hardware
+            "media overlay" plane, which paints above sibling content regardless
+            of z-index (this is what hid the z-10 hero wordmark/tagline/CTAs in
+            Safari while Chrome rendered them fine). Wrapping it in an
+            overflow-hidden + translateZ(0) layer — the same recipe the okarina
+            player already uses successfully — forces the video into a normal
+            clipped composited layer that respects z-index, so the z-10 content
+            below reliably paints on top of it. */}
+        <div
           aria-hidden="true"
-          disablePictureInPicture disableRemotePlayback
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 overflow-hidden"
           style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}
-        />
+        >
+          <video
+            src="/videos/hero-bg.mp4"
+            autoPlay muted loop playsInline preload="auto"
+            disablePictureInPicture disableRemotePlayback
+            className="absolute inset-0 size-full object-cover"
+          />
+        </div>
 
         {/* ── Mobile layout: stacked, centered ── */}
         <div
