@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
-import { useLang } from "@/lib/i18n";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { t } = useLang();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -48,192 +45,26 @@ export function Hero() {
           style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.12) 60%, transparent)" }}
         />
 
-        {/* Hero background video — wrapped in a clipped, GPU-composited layer.
-            A bare full-bleed <video> gets promoted to Safari's special hardware
-            "media overlay" plane, which paints above sibling content regardless
-            of z-index (this is what hid the z-10 hero wordmark/tagline/CTAs in
-            Safari while Chrome rendered them fine). Wrapping it in an
-            overflow-hidden + translateZ(0) layer — the same recipe the okarina
-            player already uses successfully — forces the video into a normal
-            clipped composited layer that respects z-index, so the z-10 content
-            below reliably paints on top of it. */}
-        <div
+        {/* Hero background video */}
+        <video
+          src="/videos/hero-bg.mp4"
+          autoPlay muted loop playsInline preload="auto"
           aria-hidden="true"
-          className="absolute inset-0 overflow-hidden"
-          style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}
-        >
-          <video
-            src="/videos/hero-bg.mp4"
-            autoPlay muted loop playsInline preload="auto"
-            disablePictureInPicture disableRemotePlayback
-            className="absolute inset-0 size-full object-cover"
-          />
-        </div>
-
-        {/* ── Mobile layout: stacked, centered ── */}
-        <div
-          className="relative z-10 flex w-full flex-col items-center gap-6 px-6 text-center sm:px-10 md:hidden"
-          style={{
-            opacity: "var(--hero-content-opacity, 1)",
-            transform: "translateZ(0)",          /* own GPU layer above Safari's HW video */
-            WebkitTransform: "translateZ(0)",
-            willChange: "transform",
-          }}
-        >
-          <h1 className="leading-none">
-            <Image
-              src="/icons/nototeka-logo.svg"
-              alt="Nototeka"
-              unoptimized
-              priority
-              width={300}
-              height={56}
-              style={{ height: "clamp(2.5rem, 12vw, 3.5rem)", width: "auto", maxWidth: "80vw" }}
-            />
-          </h1>
-          <p
-            className="narrative-3 opacity-80 max-w-[28ch]"
-            style={{ fontSize: "clamp(1rem, 4.5vw, 1.375rem)", lineHeight: "1.15" }}
-          >
-            {t.tagline}
-          </p>
-          <div className="flex justify-center gap-2">
-            {/* Download CTA */}
-            <a
-              href="#"
-              role="button"
-              aria-label={t.download}
-              aria-disabled="true"
-              tabIndex={0}
-              className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,252,248,0.55) 0%, rgba(255,246,236,0.28) 100%)",
-                backdropFilter: "blur(24px) saturate(150%)",
-                WebkitBackdropFilter: "blur(24px) saturate(150%)",
-                color: "#171717",
-              }}
-            >
-              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 2v9" /><path d="M4 7l4 4 4-4" /><path d="M2 14h12" />
-              </svg>
-              <span className="font-display" style={{ fontSize: "0.9375rem", letterSpacing: "-0.01em" }}>{t.download}</span>
-            </a>
-            {/* Listen CTA */}
-            <a
-              href="#"
-              role="button"
-              aria-label={t.listen}
-              aria-disabled="true"
-              tabIndex={0}
-              className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
-              style={{
-                background: "linear-gradient(180deg, rgba(255,252,248,0.4) 0%, rgba(255,246,236,0.15) 100%)",
-                backdropFilter: "blur(24px) saturate(150%)",
-                WebkitBackdropFilter: "blur(24px) saturate(150%)",
-                color: "#171717",
-              }}
-            >
-              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3" fill="currentColor">
-                <path d="M4 2.5v11l9-5.5L4 2.5z" />
-              </svg>
-              <span className="font-display" style={{ fontSize: "0.9375rem", letterSpacing: "-0.01em" }}>{t.listen}</span>
-            </a>
-          </div>
-        </div>
-
-        {/* ── Desktop layout: 3-column grid ── */}
-        <div
-          className="relative z-10 hidden w-full px-6 sm:px-10 md:block lg:px-16"
-          style={{
-            opacity: "var(--hero-content-opacity, 1)",
-            transform: "translateZ(0)",          /* own GPU layer above Safari's HW video */
-            WebkitTransform: "translateZ(0)",
-            willChange: "transform",
-          }}
-        >
-          {/* Constrain width so the three hero elements sit closer together */}
-          <div className="mx-auto w-[78%]">
-
-          {/* Row 1: Logo | (okarina space) | Tagline */}
-          <div
-            className="grid w-full items-center"
-            style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}
-          >
-            <div className="flex items-center justify-center">
-              <h1 className="leading-none">
-                <Image
-                  src="/icons/nototeka-logo.svg"
-                  alt="Nototeka"
-                  unoptimized
-                  priority
-                  width={400}
-                  height={83}
-                  style={{ height: "clamp(3.25rem, 9.1vw, 5.2rem)", width: "auto", maxWidth: "100%" }}
-                />
-              </h1>
-            </div>
-            <div />
-            <div className="flex items-center justify-center text-center">
-              <p
-                className="narrative-3 opacity-80"
-                style={{ fontSize: "1.625rem", lineHeight: "1.1" }}
-              >
-                {t.tagline}
-              </p>
-            </div>
-          </div>
-
-          {/* Row 2: CTAs under the tagline */}
-          <div
-            className="mt-8 grid w-full"
-            style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}
-          >
-            <div /><div />
-            <div className="flex justify-center gap-2">
-              <a
-                href="#"
-                role="button"
-                aria-label={t.download}
-                aria-disabled="true"
-                tabIndex={0}
-                className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
-                style={{
-                  background: "linear-gradient(180deg, rgba(255,252,248,0.55) 0%, rgba(255,246,236,0.28) 100%)",
-                  backdropFilter: "blur(24px) saturate(150%)",
-                  WebkitBackdropFilter: "blur(24px) saturate(150%)",
-                  color: "#171717",
-                }}
-              >
-                <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M8 2v9" /><path d="M4 7l4 4 4-4" /><path d="M2 14h12" />
-                </svg>
-                <span className="font-display" style={{ fontSize: "0.9375rem", letterSpacing: "-0.01em" }}>{t.download}</span>
-              </a>
-              <a
-                href="#"
-                role="button"
-                aria-label={t.listen}
-                aria-disabled="true"
-                tabIndex={0}
-                className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 no-underline transition-transform duration-300 hover:scale-[1.03]"
-                style={{
-                  background: "linear-gradient(180deg, rgba(255,252,248,0.4) 0%, rgba(255,246,236,0.15) 100%)",
-                  backdropFilter: "blur(24px) saturate(150%)",
-                  WebkitBackdropFilter: "blur(24px) saturate(150%)",
-                  color: "#171717",
-                }}
-              >
-                <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3" fill="currentColor">
-                  <path d="M4 2.5v11l9-5.5L4 2.5z" />
-                </svg>
-                <span className="font-display" style={{ fontSize: "0.9375rem", letterSpacing: "-0.01em" }}>{t.listen}</span>
-              </a>
-            </div>
-          </div>
-
-          </div>{/* end mx-auto w-[78%] */}
-        </div>
+          disablePictureInPicture disableRemotePlayback
+          className="absolute inset-0 size-full object-cover"
+        />
       </div>
+
+      {/* The hero wordmark, tagline and CTAs are NOT rendered here — they live
+          in <HeroOverlay>, a root-level fixed layer alongside the header and
+          okarina player. A full-bleed hero <video> is promoted to Safari's
+          hardware "media overlay" compositing plane, which paints above any
+          sibling content in the same subtree regardless of z-index, so
+          in-section content was invisible in Safari (fine in Chrome). The
+          header (z-50) and okarina (z-30) are root-level fixed overlays and
+          render above the video correctly; HeroOverlay uses the same approach.
+          This <Hero> still owns the scroll math that drives --hero-p and
+          --hero-content-opacity, which HeroOverlay and the okarina consume. */}
     </section>
   );
 }
