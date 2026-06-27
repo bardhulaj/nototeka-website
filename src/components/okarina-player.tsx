@@ -10,19 +10,15 @@ import { useEffect, useRef, useState } from "react";
  *     past the hero, driven by `--hero-p`
  *   - Hides while the footer is in view (intersection observer)
  *
- * The white background of the video is removed via an SVG feColorMatrix
- * filter that drops alpha to 0 for near-white pixels — true transparency,
- * works on any background color behind the video.
+ * Transparency comes from the dual-source transparent video itself — an
+ * HEVC/hvc1 alpha-channel MP4 for Safari/iOS (hardware-decoded since iOS 13)
+ * and a VP9-alpha WebM for Chrome/Firefox/Edge. No runtime keying or blend
+ * trick is needed; the alpha is genuine and per-pixel.
  */
 export function OkarinaPlayer() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [footerIn, setFooterIn] = useState(false);
-  // iOS Safari hardware decoder doesn't support HEVC alpha.
-  // Fix: remove will-change (which isolates the compositing layer) and
-  // apply mix-blend-mode:multiply on the wrapper so white pixels
-  // blend away against whatever is painted beneath.
-  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -36,10 +32,6 @@ export function OkarinaPlayer() {
     if (video.readyState >= 1) setRate();
     else video.addEventListener("loadedmetadata", setRate, { once: true });
     video.play().catch(() => {});
-
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && "ontouchend" in document) {
-      setIsIOS(true);
-    }
 
     const CARD_W = 320;
     const HERO_SIZE_FACTOR = 1.62; // 432 × 1.2 = +20% desktop
@@ -150,10 +142,7 @@ export function OkarinaPlayer() {
         style={{
           width: 0,
           height: 0,
-          // On iOS: drop will-change so the wrapper isn't promoted to an
-          // isolated GPU layer — that isolation breaks mix-blend-mode.
-          willChange: isIOS ? "auto" : "transform, width, height",
-          mixBlendMode: isIOS ? "multiply" : "normal",
+          willChange: "transform, width, height",
           opacity: footerIn ? 0 : 1,
           transition: "opacity 400ms ease",
         }}
