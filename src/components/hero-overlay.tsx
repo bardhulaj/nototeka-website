@@ -19,20 +19,15 @@ import { useLang } from "@/lib/i18n";
  * property set by <Hero>. The whole layer is pointer-events-none so the
  * (placeholder, non-functional) CTAs never block scrolling or clicks beneath it.
  *
- * Z-INDEX: this is z-40 — ABOVE the okarina player (z-30), below the header
- * (z-50). It MUST stay above the okarina: this is a GPU-composited layer
- * (translateZ + will-change), and on iOS the okarina keys its white background
- * with mix-blend-mode:multiply, which renders as a flat white box if a
- * composited layer sits in its backdrop. Keeping this overlay above the okarina
- * keeps it out of that backdrop. The text (sides/top) never overlaps the
- * centered okarina, so stacking above it has no visual effect.
+ * Z-INDEX: z-20 — below the okarina player (z-30) and the header (z-50), above
+ * the hero-bg <video>. The text (sides/top) never overlaps the centered okarina.
  */
 export function HeroOverlay() {
   const { t } = useLang();
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-40 flex items-center"
+      className="pointer-events-none fixed inset-0 z-20 flex items-center"
       style={{
         opacity: "var(--hero-content-opacity, 1)",
         transform: "translateZ(0)",

@@ -10,28 +10,27 @@ import { useEffect, useRef, useState } from "react";
  *     past the hero, driven by `--hero-p`
  *   - Hides while the footer is in view (intersection observer)
  *
- * Transparency: the video carries a genuine alpha channel (HEVC/hvc1 alpha MP4
- * for Safari, VP9-alpha WebM for Chrome/Firefox/Edge), which renders natively
- * on DESKTOP Safari and on Chrome/Firefox/Edge. iOS Safari, however, does NOT
- * composite the HEVC alpha — it plays the same file opaquely (okarina on a
- * white field) — so on iOS only we key the white away with
- * mix-blend-mode:multiply against the page beneath.
+ * Transparency is done in a <canvas>, identically on every browser. The source
+ * is a single "stacked" video (public/videos/okarina-360-stacked.mp4): the TOP
+ * half is the okarina color, the BOTTOM half is its alpha matte (white =
+ * opaque). Each decoded frame we draw the color half to the canvas and set each
+ * pixel's alpha from the matte half, producing a real per-pixel-alpha bitmap.
  *
- * IMPORTANT: mix-blend-mode can only blend against a backdrop that is NOT a
- * GPU-composited/isolated layer. Keep any full-viewport overlay that sits
- * BEHIND this okarina (e.g. <HeroOverlay>) stacked ABOVE it (higher z-index),
- * so the okarina's multiply backdrop stays the plain page — otherwise iOS
- * WebKit renders the blend as a flat white rectangle.
+ * Why not native alpha video? It works on desktop Safari + Chrome/Firefox/Edge,
+ * but iOS Safari does NOT composite HEVC `<video>` alpha (it plays the okarina
+ * opaque on a white field) and also drops the CSS workarounds (mix-blend-mode
+ * and SVG `filter: url()` are both ignored on iOS's composited video layer —
+ * WebKit #184601 / #261806). The canvas keyer is the only approach that is
+ * independent of GPU compositing, so it behaves the same everywhere — and a
+ * matte (vs. a luminance/white key) is required because the okarina's bright
+ * metallic studs are lighter than the background and a brightness key would
+ * punch holes in them.
  */
 export function OkarinaPlayer() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [footerIn, setFooterIn] = useState(false);
-  // iOS Safari doesn't composite HEVC alpha (plays the okarina opaque on white).
-  // On iOS only: drop will-change (so the wrapper isn't promoted to an isolated
-  // GPU layer, which would break the blend) and use mix-blend-mode:multiply to
-  // key the white background away against the page beneath.
-  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -45,10 +44,6 @@ export function OkarinaPlayer() {
     if (video.readyState >= 1) setRate();
     else video.addEventListener("loadedmetadata", setRate, { once: true });
     video.play().catch(() => {});
-
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && "ontouchend" in document) {
-      setIsIOS(true);
-    }
 
     const CARD_W = 320;
     const HERO_SIZE_FACTOR = 1.62; // 432 × 1.2 = +20% desktop
@@ -131,6 +126,71 @@ export function OkarinaPlayer() {
     };
   }, []);
 
+  // Composite the stacked video (color + matte) into the canvas every frame.
+  useEffect(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+    const matteCanvas = document.createElement("canvas");
+    const mctx = matteCanvas.getContext("2d", { willReadFrequently: true });
+    if (!mctx) return;
+
+    const MAX_SIDE = 720; // cap bitmap res (okarina displays <=~520px)
+    let stopped = false;
+    let handle = 0;
+    const useRVFC = typeof video.requestVideoFrameCallback === "function";
+
+    const draw = () => {
+      if (stopped) return;
+      const vw = video.videoWidth;
+      const vh = video.videoHeight; // stacked: full frame is 2 halves tall
+      if (vw && vh) {
+        const half = vh / 2;
+        const s = Math.min(1, MAX_SIDE / Math.max(vw, half));
+        const cw = Math.max(1, Math.round(vw * s));
+        const ch = Math.max(1, Math.round(half * s));
+        if (canvas.width !== cw || canvas.height !== ch) {
+          canvas.width = cw;
+          canvas.height = ch;
+          matteCanvas.width = cw;
+          matteCanvas.height = ch;
+        }
+        // top half = color, bottom half = alpha matte (grayscale)
+        ctx.drawImage(video, 0, 0, vw, half, 0, 0, cw, ch);
+        mctx.drawImage(video, 0, half, vw, half, 0, 0, cw, ch);
+        try {
+          const img = ctx.getImageData(0, 0, cw, ch);
+          const matte = mctx.getImageData(0, 0, cw, ch).data;
+          const d = img.data;
+          for (let i = 0; i < d.length; i += 4) d[i + 3] = matte[i];
+          ctx.putImageData(img, 0, 0);
+        } catch {
+          // getImageData only throws on a cross-origin taint; the video is
+          // same-origin (/videos/...), so this should never fire.
+        }
+      }
+      schedule();
+    };
+
+    const schedule = () => {
+      if (stopped) return;
+      handle = useRVFC
+        ? video.requestVideoFrameCallback(draw)
+        : requestAnimationFrame(draw);
+    };
+
+    video.play().catch(() => {});
+    schedule();
+
+    return () => {
+      stopped = true;
+      if (useRVFC) video.cancelVideoFrameCallback?.(handle);
+      else cancelAnimationFrame(handle);
+    };
+  }, []);
+
   useEffect(() => {
     const footer = document.querySelector("footer");
     if (!footer) return;
@@ -145,43 +205,40 @@ export function OkarinaPlayer() {
   }, []);
 
   return (
-    <>
-      {/* Alpha is baked into the video files — no runtime keying needed.
-          - HEVC alpha MP4: Safari 13+ (preferred — Safari is the only modern
-            browser that doesn't support VP9 alpha in WebM)
-          - VP9 alpha WebM: Chrome, Firefox, Edge
-          See docs/figma-import.md for the ffmpeg encode commands. */}
-      <div
-        ref={wrapperRef}
-        id="okarina-player"
+    <div
+      ref={wrapperRef}
+      id="okarina-player"
+      aria-hidden="true"
+      className="pointer-events-none fixed left-0 top-0 z-30 overflow-hidden"
+      style={{
+        width: 0,
+        height: 0,
+        willChange: "transform, width, height",
+        opacity: footerIn ? 0 : 1,
+        transition: "opacity 400ms ease",
+      }}
+    >
+      {/* Decoding source for the canvas only — never shown. The stacked video
+          (color over matte) is composited to real alpha in <canvas>. */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        disableRemotePlayback
+        src="/videos/okarina-360-stacked.mp4"
+        className="absolute inset-0 size-full"
+        style={{ opacity: 0, pointerEvents: "none" }}
+      />
+      <canvas
+        ref={canvasRef}
         aria-hidden="true"
-        className="pointer-events-none fixed left-0 top-0 z-30 overflow-hidden"
-        style={{
-          width: 0,
-          height: 0,
-          // On iOS: drop will-change so the wrapper isn't promoted to an
-          // isolated GPU layer — that isolation breaks the mix-blend-mode key.
-          willChange: isIOS ? "auto" : "transform, width, height",
-          mixBlendMode: isIOS ? "multiply" : "normal",
-          opacity: footerIn ? 0 : 1,
-          transition: "opacity 400ms ease",
-        }}
-      >
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          disableRemotePlayback
-          className="absolute inset-0 size-full object-cover"
-        >
-          <source src="/videos/okarina-360-alpha.mp4" type='video/mp4; codecs="hvc1"' />
-          <source src="/videos/okarina-360.webm" type='video/webm; codecs="vp9"' />
-        </video>
-      </div>
-    </>
+        className="absolute inset-0 size-full"
+        style={{ objectFit: "cover" }}
+      />
+    </div>
   );
 }
