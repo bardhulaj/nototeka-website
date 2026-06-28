@@ -10,15 +10,28 @@ import { useEffect, useRef, useState } from "react";
  *     past the hero, driven by `--hero-p`
  *   - Hides while the footer is in view (intersection observer)
  *
- * Transparency comes from the dual-source transparent video itself — an
- * HEVC/hvc1 alpha-channel MP4 for Safari/iOS (hardware-decoded since iOS 13)
- * and a VP9-alpha WebM for Chrome/Firefox/Edge. No runtime keying or blend
- * trick is needed; the alpha is genuine and per-pixel.
+ * Transparency: the video carries a genuine alpha channel (HEVC/hvc1 alpha MP4
+ * for Safari, VP9-alpha WebM for Chrome/Firefox/Edge), which renders natively
+ * on DESKTOP Safari and on Chrome/Firefox/Edge. iOS Safari, however, does NOT
+ * composite the HEVC alpha — it plays the same file opaquely (okarina on a
+ * white field) — so on iOS only we key the white away with
+ * mix-blend-mode:multiply against the page beneath.
+ *
+ * IMPORTANT: mix-blend-mode can only blend against a backdrop that is NOT a
+ * GPU-composited/isolated layer. Keep any full-viewport overlay that sits
+ * BEHIND this okarina (e.g. <HeroOverlay>) stacked ABOVE it (higher z-index),
+ * so the okarina's multiply backdrop stays the plain page — otherwise iOS
+ * WebKit renders the blend as a flat white rectangle.
  */
 export function OkarinaPlayer() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [footerIn, setFooterIn] = useState(false);
+  // iOS Safari doesn't composite HEVC alpha (plays the okarina opaque on white).
+  // On iOS only: drop will-change (so the wrapper isn't promoted to an isolated
+  // GPU layer, which would break the blend) and use mix-blend-mode:multiply to
+  // key the white background away against the page beneath.
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -32,6 +45,10 @@ export function OkarinaPlayer() {
     if (video.readyState >= 1) setRate();
     else video.addEventListener("loadedmetadata", setRate, { once: true });
     video.play().catch(() => {});
+
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && "ontouchend" in document) {
+      setIsIOS(true);
+    }
 
     const CARD_W = 320;
     const HERO_SIZE_FACTOR = 1.62; // 432 × 1.2 = +20% desktop
@@ -142,7 +159,10 @@ export function OkarinaPlayer() {
         style={{
           width: 0,
           height: 0,
-          willChange: "transform, width, height",
+          // On iOS: drop will-change so the wrapper isn't promoted to an
+          // isolated GPU layer — that isolation breaks the mix-blend-mode key.
+          willChange: isIOS ? "auto" : "transform, width, height",
+          mixBlendMode: isIOS ? "multiply" : "normal",
           opacity: footerIn ? 0 : 1,
           transition: "opacity 400ms ease",
         }}
